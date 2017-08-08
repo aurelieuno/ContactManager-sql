@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  <div id="container">
+  <div id="createcontact">
+  h2 Contacts
+  ul(id= "contactlist")
+  </div>
+
+  <div id="createlist">
+  h2(id = "title") Create Contact
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Name:
+      input#name.form-control(type='text', name = "name", placeholder='name' required='true' value=(undefined===author ? '' : author.first_name) )
+
+    div.form-group
+      label(for='email') Email:
+      input#email.form-control(type='text', name = "email", placeholder='email@gmail.com', required='true' value=(undefined===author ? '' : author.family_name))
+
+    div.form-group
+      label(for='phone') Phone Number:
+      input#phone.form-control(type='text', name = "phone", placeholder='5041111111', value=(undefined===author ? '' : author.date_of_birth) )
+
+    button.btn.btn-primary(type='submit') Submit
+
+    form(method='POST' action='/update')
+    button.btn.btn-info(type='submit') Update
+
+    form(method='POST' action='/delete')
+    button.btn.btn-danger(type='submit') Delete
+    </div>
+    </div>
+
+
+
+
+
+  include footer/footer.pug
+

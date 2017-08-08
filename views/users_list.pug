@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 #{title}
+
+  <div class="jumbotron">
+
+  form(method='POST' action='/viewcontact')
+    div.form-group
+      label(for='user') Users:
+      select#user.form-control(type='select', placeholder='Select user' name='user' required='true' )
+        for user in user_list
+            option(value=user.id) #{user.email}
+
+    <button type="submit" class="btn btn-primary">View Contact</button>
+  </div>
+

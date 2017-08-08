@@ -1,0 +1,64 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#msg{
+  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  color: red;
+}
+
+h4#hello{
+  font-family: Shrikhand;
+  font-size: 26px;
+/*  font-weight: bold;*/
+  color: gold;
+}
+
+#welcome{
+  font-family: Shrikhand;
+  color: gold;
+}
+
+#contact{
+  font-family: Shrikhand;
+  font-size: 20px;
+/*  font-weight: bold;*/
+  color: orange;
+
+ }
+
+p#visit{
+  font-size: xx-small;
+  font-style: italic;
+}
+
+#createlist{
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#createcontact{
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#container {
+  display: flex; /* or inline-flex */
+  justify-content: space-between; ;
+}
+
+#footer{
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+#page1{
+  float:left;
+  width:150px;
+}
+
+#page{
+  overflow:auto;
+}

@@ -1,0 +1,43 @@
+doctype html
+html(lang='en')
+  head
+    title= title
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
+    <script src="/javascripts/todo.js"></script>
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css")
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Pacifico|Prociono">
+    <link href="https://fonts.googleapis.com/css?family=Shrikhand" rel="stylesheet">
+
+
+  body
+
+  <i class="fa fa-coffee fa-lg" style="color:green;"></i>
+  <i class="fa fa-coffee fa-lg" style="color:red;"></i>
+
+hr
+
+<div class="nav-list">
+  <a class="nav-list-item" href="/"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp; Home</a>
+  <a class="nav-list-item" href="/login"><i class="fa fa-lock fa-fw" aria-hidden="true"></i>&nbsp; LogIn</a>
+  <a class="nav-list-item" href="/signup"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>&nbsp; SignUp</a>
+  <a class="nav-list-item" href="/dashboard"><i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp; Dashboard</a>
+  <a class="nav-list-item" href="/logout"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>&nbsp; LogOut</a>
+</div>
+
+h1
+
+  block content
+
+  include footer/footer.pug
+
+
+
+
+
+

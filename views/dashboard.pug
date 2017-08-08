@@ -1,0 +1,63 @@
+extends layout
+
+block content
+
+  h6
+
+  <div id="page">
+
+  <div id="page1">
+  <ul class="nav flex-column">
+  <li class="nav-item">
+    <a class="nav-link active" href="/dashboard">Your Account</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/viewuser">View Users</a>
+  </li>
+  </ul>
+  </div>
+
+  <div id="page2">
+
+  h4#hello Hello #{email}!
+  p#visit Number of times you visited this page: #{pagenb}
+
+  <div id="container">
+  <div id="createcontact">
+  h2 Contacts
+  ul(id= "contactlist")
+  </div>
+
+  <div id="createlist">
+  h2(id = "title") Create Contact
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Name:
+      input#name.form-control(type='text', name = "name", placeholder='name' required='true' value=(undefined===author ? '' : author.first_name) )
+
+    div.form-group
+      label(for='email') Email:
+      input#email.form-control(type='text', name = "email", placeholder='email@gmail.com', required='true' value=(undefined===author ? '' : author.family_name))
+
+    div.form-group
+      label(for='phone') Phone Number:
+      input#phone.form-control(type='text', name = "phone", placeholder='5045550213', value=(undefined===author ? '' : author.date_of_birth) )
+
+    button.btn.btn-primary(type='submit') Submit
+
+    form(method='POST' action='/update')
+    button.btn.btn-info(type='submit') Update
+
+    form(method='POST' action='/delete')
+    button.btn.btn-danger(type='submit') Delete
+    </div>
+    </div>
+    </div>
+    </div>
+
+
+
+
+
+
