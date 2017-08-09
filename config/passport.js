@@ -5,13 +5,18 @@ var bcrypt = require('bcrypt-nodejs');
 //==========================================================================
 module.exports = function (passport) {
 //Configuration and Settings//Provided by Passport
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
+passport.serializeUser(function(id, done) {
+  console.log('serialize')
+  console.log(id)
+  done(null, id);
 });
 
 passport.deserializeUser((id, done) => {
+  console.log("deserialize")
+  console.log(id)
   knex('users').where({id}).first()
-  .then((rows) => { done(null, rows[0]); })
+ //then((rows) => {console.log(rows)})
+  .then((rows) => { done(null, rows); })
   .catch((err) => { done(err, null); })
 });
 
@@ -26,20 +31,22 @@ function(req, email, password, done) {
 
     knex('users').where({email }).first()
     .then((rows) => {
-      if (rows.length) {
+      console.log(rows)
+      if (rows) {
         return done(null, false, req.flash('signupMessage', 'That email is already taken. Log in?'));
       }
       else {
-        const password = generateHash(password);
+        //const password = generateHash(password);
         knex.insert({'email': email, 'password' : password}).into('users')
-        .then(function(err) {
-          if (err)
-            throw err;
+        .then((rows) => {
+          console.log("sign-up");
+          console.log(rows)//[7]
           return done(null, rows[0]);
-        });
+        })
+        .catch((err)=>{console.log(err)})
       }
     })
-    .catch((err) => {return done(err)})//node error like no database, server exception
+    .catch((err) => {console.log(err)})//node error like no database, server exception
 }));
 
 //local-login strategy
@@ -51,26 +58,34 @@ passport.use('local-login', new LocalStrategy({
 function(req, email, password, done) {
   knex('users').where({email }).first()
   .then((rows) => {
-    if (!rows.length)
+    console.log('local-login')
+    console.log(rows.password)
+    //console.log(password)
+    if (!rows) {
         return done(null, false, req.flash('loginMessage', 'No user found. Please sign-up?'));
+      }
       //If the credentials are not valid (for example, if the password is incorrect),
       //done should be invoked with false instead of a user to indicate an authentication failure.
-    if (! validPasword(rows[0].password,password))
+
+     //else console.log(validPassword(password,rows.password))
+     if (password!==rows.password) {
         return done(null, false, req.flash('loginMessage', 'Wrong password.'));
+      }
       //If the credentials are valid, the verify callback invokes done to supply Passport with
       //the user that authenticated
-    return done(null, rows[0]);
+      return done(null, rows[0]);
   })
-  .catch((err) => {return done(err)})//node error like no database, server exception
+  .catch((err) => {console.log(err)})//node error like no database, server exception
 }));
 
 function generateHash(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
 };
 
-function validPassword(password) {
-    return bcrypt.compareSync(password, this.password);
+function validPassword(userPassword, databasePassword) {
+    return bcrypt.compareSync(userPassword, databasePassword);//bcrypt.compareSync(myPlaintextPassword, hash); // true
 }
+
 }
 
 

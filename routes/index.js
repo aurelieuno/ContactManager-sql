@@ -9,14 +9,23 @@ var async = require('async');
 /* GET request for getting root. */
 router.get('/', function(req, res, next) {
     res.render('welcome');
+    knex.select('*').from('users')
+    .then(function(rows) {
+      console.log("home");
+      console.log(rows);
+    })
+    .catch((err) => { console.log(err) })
  })
 //////////////////////Authentication Routes////////////////////////////
 //needed to protect the '/dashboard' route
 function isLoggedIn(req, res, next) {
+
+  console.log(req.isAuthenticated())
   if(req.isAuthenticated()) {
     return next();
   }
-  return res.redirect('/login');
+  return res.redirect('/dashboard');
+
 }
 
 
@@ -45,10 +54,16 @@ router.post('/login', passport.authenticate('local-login', {
   failureFlash: true,
 }));
 
+
 ///////////////////////////////////////////////////////////////////////
 router.get('/dashboard', isLoggedIn, function(req, res, next) {
-    console.log("req.user: "+req.user);
-    console.log(req.session);
+    console.log("dash.req.user");
+    console.log(req.user);
+/*    { id: 7,
+  email: 'alebec7@gmail.com',
+  password: '$2a$08$fhfnVqq76WB2Kgh832ndquQpMuJ8DNwNsfIqDqCPe100KluyjnLqS' }*/
+    console.log(req.session.passport);
+    console.log(req.session[passport._key].user);
 
     if(req.session.page_views){
      req.session.page_views++;
@@ -75,20 +90,25 @@ router.get('/viewuser', isLoggedIn, function(req, res, next) {
 
 router.post('/viewcontact', isLoggedIn, function(req, res, next) {
 
-    async.parallel({
-    contact: knex('contacts').where({"user_id": req.body.user}),
-    user: knex.select().table('users')
-  }, function(err, results) {
-    if (err) { return next(err); }
-    //Successful, so render
-    res.render('userscontact_list', { title: 'Users List', contact_list: results.contact, user_list: results.user });
+    const user = knex.select().table('users')
+    const contact = knex('contacts').where({"user_id": req.body.user})
+
+    Promise.all([user,contact])
+    .then((values)=> {
+      console.log(values[0],values[1])
+      res.render('userscontact_list', { title: 'Users List', contact_list: values[1], user_list: values[0] })
+    })
+    .catch((err)=> console.log(err))
+
   });
 
-});
+
 
 //////////////////////Dashboard Routes////////////////////////////
 /* Special GET request for getting/importing the mongoose contact data in the script file. */
 router.get('/dashboard/ajax', isLoggedIn, function(req, res, next) {
+  console.log("ajax.req.user");
+  console.log(req.user);
   knex('contacts').where({"user_id": req.user.id})
   .then((rows)=>{res.send(rows)})
   .catch((err) => { done(err, null); })
@@ -99,56 +119,46 @@ router.get('/dashboard/ajax', isLoggedIn, function(req, res, next) {
 router.post('/dashboard', isLoggedIn, function(req, res, next) {
 
   console.log("req.user.id: "+ req.user.id)
-
-    var contact = new Contact(
-      {  name: req.body.name,
-         email: req.body.email,
-         phone: req.body.phone,
-         usernameid: req.user._id,//The contact have the userid field to find them later on
-       });
+  console.log(req.body)
 
         //Check if contact with same name already exists
-        Contact.findOne({"_id" : req.body._id})
-            .exec( function(err, found_contact) {
-                 console.log('found_contact: ' + found_contact);
-                 if (err) { return next(err); }
-
-                 if (found_contact) {
-                     //Genre exists, redirect to its detail page
-                     res.send("Contact already exists")
-                 }
-                 else {
-                     contact.save(function (err, contact) {
-                       if (err) { return next(err); }
-                       console.log(contact);
-
-                       res.redirect("/dashboard");
-                     });
-                 }
-             });
+        knex("contacts").where({"email" : req.body.email}).first()
+        .then((rows)=> {
+          if (rows) {
+            res.send("Contact already exists")
+          }
+          else {
+            knex.insert({"name" : req.body.name, "email": req.body.email, "phone":req.body.phone, "user_id":req.user.id}).into('contacts')
+            .then((rows)=>{res.redirect("/dashboard")})
+            .catch((err)=>console.log(err))
+          }
+        })
+        .catch((err)=>console.log(err))
     });
 
 
 /* POST request for updating Contact. */
 router.post('/dashboard/update', isLoggedIn, function(req, res, next) {
 
-  Contact.findOneAndUpdate({"_id" : req.body._id},
-    {  name: req.body.name,
-       email: req.body.email,
-       phone: req.body.phone,
-       }, function updateContact(err, results) {
-    if (err) { return next(err); }
-    res.send(results);
-  })
+  knex('contacts')
+  .where({"id" : req.body.id})
+  .update({  name: req.body.name,
+             email: req.body.email,
+             phone: req.body.phone
+           })
+  .then((rows)=>res.send("ok"))
+  .catch((err)=>console.log(err))
+
 });
 
 /* POST request for deleting Contact. */
 router.post('/dashboard/delete', isLoggedIn, function(req, res, next) {
+  console.log(req.body)
 
-  Contact.findOneAndRemove({"_id" : req.body._id}, function deleteContact(err, results) {
-    if (err) { return next(err); }
-    res.send(results);
-  })
+  knex('contacts')
+  .where({"id" : req.body.id})
+  .del()
+  .then((rows)=>res.send(req.body))
 });
 
 module.exports = router;
@@ -158,78 +168,3 @@ module.exports = router;
 
 
 
-/* POST request for creating Contact.
-router.post('/dashboard', contact_controller.contact_create_post);
-
- POST request for updating Contact.
-router.post('/update', contact_controller.contact_update_post);
-
- POST request for deleting Contact.
-router.post('/delete', contact_controller.contact_delete_post);*/
-
-
-
-/*POST /login 302 261.446 ms - 64
-{ _id: 59484bbc890ff911e039e4dc,
-  password: '$2a$08$XIXaB.T6uhUadonc4feyP.kY141RBH2MTR9oltZ3bfUuVTELyOy3a'
-  email: 'alebec@gmail.com',
-  __v: 0 }*/
-
-
-/*req.user: { _id: 594922bb3945681ce48b5e54,
-  password: '$2a$08$0OdGKwIUVyciPL7pJZiv9eVkLxgDAooVVqvhFEaXGyC8Ca5GjxiRe',
-  email: 'alebec@gmail.com',
-  __v: 0 }
-Session {
-  cookie:
-   { path: '/',
-     _expires: null,
-     originalMaxAge: null,
-     httpOnly: true },
-  flash: {},
-  passport: { user: '594922bb3945681ce48b5e54' } }*/
-
-
-
-
-
-
-
-
-
-/*[ { _id: 594922ce3945681ce48b5e55,
-    name: 'Maria Ghuio',
-    email: 'mg@gmail.com',
-    phone: '5041236547',
-    usernameid: '594922bb3945681ce48b5e54',
-    __v: 0 },
-  { _id: 594922ed3945681ce48b5e56,
-    name: 'Thomas Dupont',
-    email: 'td@gmail.com',
-    phone: '5041236547',
-    usernameid: '594922bb3945681ce48b5e54',
-    __v: 0 },
-  { _id: 5949230d3945681ce48b5e57,
-    name: 'Liliane Rewer',
-    email: 'lr@gmail.com',
-    phone: '5041236547',
-    usernameid: '594922bb3945681ce48b5e54',
-    __v: 0 },
-  { _id: 594925041abb921cecc17784,
-    name: 'Catty',
-    email: 'ct@gmail.com',
-    phone: '5144569874',
-    usernameid: '594924e31abb921cecc17783',
-    __v: 0 },
-  { _id: 594925131abb921cecc17785,
-    name: 'Barry',
-    email: 'be@gmail.com',
-    phone: '5041234569',
-    usernameid: '594924e31abb921cecc17783',
-    __v: 0 },
-  { _id: 594925201abb921cecc17786,
-    name: 'Marta',
-    email: 'bn@gmail.com',
-    phone: '5041236547',
-    usernameid: '594924e31abb921cecc17783',
-    __v: 0 } ]*/

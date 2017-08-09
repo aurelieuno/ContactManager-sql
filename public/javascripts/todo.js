@@ -33,7 +33,8 @@ $(document).ready(function() {
                 $("#title").html("Selected Contact")
 
                 foundcnt= _.find(data, {'name' : $(this).text()})
-                console.dir("foundcontact "+foundcnt)
+                console.dir("foundcontact")
+                console.dir(foundcnt)
                 $("#name").val(foundcnt.name);
                 $("#email").val(foundcnt.email);
                 $("#phone").val(foundcnt.phone);
@@ -41,7 +42,7 @@ $(document).ready(function() {
             })
 
 $(".btn.btn-info").click(function(){
-  let foundid = foundcnt._id;
+  let foundid = foundcnt.id;
   console.dir(foundid);
 
   name=$("#name").val();
@@ -49,7 +50,7 @@ $(".btn.btn-info").click(function(){
   email=$('#email').val();
 
    $.post( "/dashboard/update", {
-    "_id" : foundid,
+    "id" : foundid,
     'name': name,
     'email': email,
     "phone" : phone
@@ -60,13 +61,13 @@ $(".btn.btn-info").click(function(){
 
 
 $(".btn.btn-danger").click(function(){
-  let foundid = foundcnt._id;
+  let foundid = foundcnt.id;
 
   name=$("#name").val();
   phone=$("#phone").val();
   email=$('#email').val();
    $.post( "/dashboard/delete", {
-    "_id" : foundid,
+    "id" : foundid,
     'name': name,
     'email': email,
     "phone" : phone

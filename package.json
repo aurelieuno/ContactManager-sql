@@ -1,5 +1,5 @@
 {
-  "name": "ToDoList1",
+  "name": "ToDoList2-SQL",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,7 @@
   "dependencies": {
     "assert": "^1.4.1",
     "async": "^2.3.0",
+    "bcrypt": "^1.0.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.16.0",
     "connect-flash": "^0.1.1",
