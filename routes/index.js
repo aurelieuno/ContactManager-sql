@@ -89,6 +89,7 @@ router.get('/viewuser', isLoggedIn, function(req, res, next) {
 });
 
 router.post('/viewcontact', isLoggedIn, function(req, res, next) {
+  console.log(req.body);
 
     const user = knex.select().table('users')
     const contact = knex('contacts').where({"user_id": req.body.user})
@@ -102,7 +103,17 @@ router.post('/viewcontact', isLoggedIn, function(req, res, next) {
 
   });
 
-
+router.post('/importcontact', isLoggedIn, function(req, res, next) {
+  console.log("req.body");
+  console.log(req.body);
+  console.log(req.session.passport)
+   knex('contacts')
+  .where({"user_id": req.body.user})
+  .update({"user_id": req.session.passport.user})
+  .then((rows)=>console.log(rows))
+  .catch((err)=>console.log(err))
+  res.redirect("/dashboard")
+  });
 
 //////////////////////Dashboard Routes////////////////////////////
 /* Special GET request for getting/importing the mongoose contact data in the script file. */

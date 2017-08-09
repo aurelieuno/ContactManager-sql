@@ -14,6 +14,15 @@ block content
             option(value=user.id) #{user.email}
 
     <button type="submit" class="btn btn-primary">View Contact</button>
+
+  form(method='POST' action='/importcontact')
+    div.form-group
+      label(for='user') Users:
+      select#user.form-control(type='select', placeholder='Select user' name='user' required='true' )
+        for user in user_list
+            option(value=user.id) #{user.email}
+
+    <button type="submit" class="btn btn-info">Import Contact</button>
   </div>
 
   <div class="jumbotron">
